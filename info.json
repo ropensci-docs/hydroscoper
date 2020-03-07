@@ -1,0 +1,12 @@
+{
+  "commit": {
+    "commit": "d5c5456f45d373e2cdccf79f72e370651b5acc20",
+    "author": "Konstantinos Vantas <kon.vantas@gmail.com>",
+    "time": "2020-03-07 17:30:09",
+    "files": 1,
+    "merge": false,
+    "message": "update news\n"
+  },
+  "remote": "https://github.com/ropensci/hydroscoper",
+  "pkg": "hydroscoper"
+}
