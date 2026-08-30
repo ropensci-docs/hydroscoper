@@ -1,0 +1,121 @@
+# hydroscoper
+
+[![tic](https://github.com/ropensci/hydroscoper/workflows/tic/badge.svg?branch=master)](https://github.com/ropensci/hydroscoper/actions)
+[![codecov](https://codecov.io/github/ropensci/hydroscoper/branch/master/graphs/badge.svg)](https://app.codecov.io/gh/ropensci/hydroscoper)
+[![minimal R
+version](https://img.shields.io/badge/R%3E%3D-3.4-6666ff.svg)](https://cran.r-project.org/)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/hydroscoper)](https://cran.r-project.org/package=hydroscoper)
+[![packageversion](https://img.shields.io/badge/Package%20version-1.7.0-orange.svg?style=flat-square)](https://github.com/ropensci/hydroscoper)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/hydroscoper)](https://cran.r-project.org/package=hydroscoper)
+[![ropensci](https://badges.ropensci.org/185_status.svg)](https://github.com/ropensci/software-review/issues/185)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1196540.svg)](https://doi.org/10.5281/zenodo.1196540)
+[![DOI](http://joss.theoj.org/papers/10.21105/joss.00625/status.svg)](https://doi.org/10.21105/joss.00625)
+
+![](https://github.com/ropensci/hydroscoper/raw/master/man/figures/hydroscoper_hex.png)
+
+`hydroscoper` is an R interface to the Greek National Data Bank for
+Hydrological and Meteorological Information, *Hydroscope*. For more
+details checkout the package’s
+[website](https://docs.ropensci.org/hydroscoper/) and the vignettes:
+
+- [An introduction to
+  `hydroscoper`](https://docs.ropensci.org/hydroscoper/articles/intro_hydroscoper.html)
+  with details about the Hydroscope project and the package.
+- [Using `hydroscoper`’s data
+  sets](https://docs.ropensci.org/hydroscoper/articles/stations_with_data.html)
+  with a simple example of how to use the package’s internal data sets.
+
+## Installation
+
+Install the stable release from CRAN with:
+
+``` r
+
+install.packages("hydroscoper")
+```
+
+You can install the development version from GitHub with:
+
+``` r
+
+# install.packages("devtools")
+devtools::install_github("ropensci/hydroscoper")
+```
+
+## Using hydroscoper
+
+The functions that are provided by `hydroscoper` are:
+
+- `get_stations, get_timeseries, ..., etc.` family functions, to
+  retrieve tibbles with Hydroscope’s data for a given data source.
+- `get_data`, to retrieve a tibble with time series’ values.  
+- `hydro_coords`, to convert Hydroscope’s points’ raw format to a
+  tibble.
+- `hydro_translate` to translate various terms and names from Greek to
+  English.
+
+The data sets that are provided by `hydroscoper` are:
+
+- `stations` a tibble with stations’ data from Hydroscope.
+- `timeseries` a tibble with time series’ data from Hydroscope.
+- `greece_borders` a tibble with the borders of Greece.
+
+## Example
+
+This is a minimal example which shows how to get the station’s *200200*
+precipitation time series *56* from the *kyy* sub-domain.
+
+Load libraries and get data:
+
+``` r
+
+library(hydroscoper)
+library(tibble)
+library(ggplot2)
+
+ts_raw <- get_data(subdomain = "kyy", time_id = 56)
+ts_raw
+```
+
+Let’s create a plot:
+
+``` r
+
+ggplot(data = ts_raw, aes(x = date, y = value))+
+  geom_line()+
+  labs(title= "30 min precipitation for station 200200",
+       x="Date", y = "Rain height (mm)")+
+  theme_classic()
+```
+
+## Meta
+
+- Bug reports, suggestions, and code are welcome. Please see
+  [Contributing](https://github.com/ropensci/hydroscoper/blob/master/CONTRIBUTING.md).
+- License:
+  - All code is licensed MIT.
+  - All data are from the public data sources in
+    `http://www.hydroscope.gr/`.
+- To cite `hydroscoper` please use:
+
+``` R
+Vantas Konstantinos, (2018). hydroscoper: R interface to the Greek National Data Bank for
+Hydrological and Meteorological Information. Journal of Open Source Software,
+3(23), 625 DOI:10.21105/joss.00625
+```
+
+or the BibTeX entry:
+
+``` R
+@Article{kvantas2018,
+author = {Konstantinos Vantas},
+title = {{hydroscoper}: R interface to the Greek National Data Bank for Hydrological and Meteorological Information},
+doi = {10.21105/joss.00625},
+year = {2018},
+month = {mar},
+publisher = {The Open Journal},
+volume = {2},
+number = {23},
+journal = {The Journal of Open Source Software}
+}
+```
