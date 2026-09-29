@@ -1,0 +1,187 @@
+# An introduction to \`hydroscoper\`
+
+## What is Hydroscope?
+
+`Hydroscope` is the Greek National Data Bank for Hydrological and
+Meteorological Information, a result of long-standing efforts by
+numerous Greek scientists in collaboration with various companies and
+associations. It was implemented in three phases, funded by the Ministry
+of Development, the Ministry of Environment and Energy and the European
+Union.
+
+This National Data Bank provides several data sources from various
+organisations via a web interface. Each participating organisation keeps
+its data on its own server using a database system for the storage and
+management of information. These organisations are:
+
+- Ministry of Environment and Energy.
+- Ministry of Rural Development and Food.
+- National Meteorological Service.
+- National Observatory of Athens.
+- Greek Prefectures.
+- Public Power Corporation.
+
+The above data are structured as tables and space separated text files,
+but are in Greek, thus limiting their usefulness. Another issue with
+Hydroscope is the lack of comprehensive look-up tables about the
+available data, which are spread across many different databases.
+
+## What does `hydroscoper`?
+
+`hydroscoper` provides functionality for automatic retrieval and
+translation of Hydroscope’s data to English. The main functions that can
+be utilized is the family of functions, `get_stations`,
+`get_timeseries`, `get_data`, etc., to easily download Hydroscope’s data
+as `tibbles`.
+
+The package covers Hydroscope’s data sources using the Enhydris API. The
+Enhydris database is implemented in PostgreSQL and details about the
+about the Web-service API [here](http://enhydris.readthedocs.io).
+
+### Internal datasets
+
+The internal datasets of the package can be used to run queries on the
+available Hydroscope’s stations and time series data, reducing the time
+needed for downloading and data wrangling, as these data are rarely
+modified. These datasets are:
+
+#### `stations`
+
+It is a comprehensive look-up table with geographical and ownership
+information of the available stations in all Hydroscope’s databases. The
+variables are:
+
+1.  `station_id` The station’s ID.
+2.  `name` The station’s name.
+3.  `water_basin` The station’s Water Basin.
+4.  `water_division` The station’s Water Division.
+5.  `owner` The station’s owner.
+6.  `longitude` The station’s longitude in decimal degrees, (ETRS89).
+7.  `latitude` The station’s latitude in decimal degrees, (ETRS89).
+8.  `altitude` The station’s altitude, meters above sea level.
+9.  `subdomain` The corresponding Hydroscope’s database.
+
+#### `timeseries`
+
+It is also a look-up table with all the available measurements for a
+given station in a given Hydroscope’s database, with units of
+measurement and times of those measurements. The variables are:
+
+1.  `time_id` The time series ID.
+2.  `station_id` The corresponding station’s ID.
+3.  `variable` The time series variable type.
+4.  `timestep` The timestep of time series.
+5.  `units` The units of the time series.
+6.  `start_date` The starting date of time series values.
+7.  `end_date` The ending date of time series values.
+8.  `subdomain` The corresponding Hydroscope’s database.
+
+## Data sources
+
+- Ministry of Environment and Energy, National Observatory of Athens and
+  Greek Prefectures, `http://kyy.hydroscope.gr/`.
+- Ministry of Rural Development and Food, `http://ypaat.hydroscope.gr`.
+- National Meteorological Service, `http://emy.hydroscope.gr`.
+- Greek Public Power Corporation, `http://deh.hydroscope.gr`.
+
+Note that:
+
+1.  Only the two Ministries allow to download time series values freely.
+2.  `ypaat`, `emy` and `kyy` sub-domains are maintained by the National
+    Technical University Of Athens and these servers work seamlessly.
+3.  `deh` sub-domain is maintained by the Greek Public Power Corporation
+    and occasionally the server is down.
+
+## Example
+
+This is a basic example which shows how to get the stations’ and time
+series’ data from the Hydroscope’s Ministry of Environment and Energy
+database, `http://kyy.hydroscope.gr/`.
+
+Load libraries:
+
+``` r
+
+library(hydroscoper)
+library(ggplot2)
+library(tibble)
+```
+
+We will use the package’s data `stations` and `timeseries`, to reduce
+the time needed with data munging. We can subset the station’s data for
+the `kyy` sub-domain with:
+
+``` r
+
+# load data
+data("stations")
+
+# subset stations data
+kyy_stations <- subset(stations, subdomain == "kyy")
+
+# view kyy stations
+kyy_stations
+#> # A tibble: 425 × 9
+#>    station_id name  water_basin water_division owner longitude latitude altitude
+#>         <int> <chr> <chr>       <chr>          <chr>     <dbl>    <dbl>    <dbl>
+#>  1     501032 AG. … "KOURTALIO… GR13           min_…      NA       NA        NA 
+#>  2     200246 GEPH… "ALPHEIOS … GR01           min_…      22.0     37.5     318 
+#>  3     200237 TROP… "ALPHEIOS … GR01           min_…      22.0     37.7     728.
+#>  4     200231 BYTI… "ALPHEIOS … GR01           min_…      22.2     37.7    1011.
+#>  5     200200 LYKO… "ALPHEIOS … GR01           min_…      22.2     37.9     758.
+#>  6     200236 MEGA… "ALPHEIOS … GR01           min_…      22.1     37.4     429.
+#>  7     200244 ODOG… "REMA CHOR… GR01           min_…      21.8     37.0     182.
+#>  8     200204 TRIP… "ALPHEIOS … GR01           min_…      21.9     37.9     570.
+#>  9     200198 KAST… "ALPHEIOS … GR01           min_…      22.0     37.9     792.
+#> 10     200239 PERD… "ALPHEIOS … GR01           min_…      22.0     37.7     837.
+#> # ℹ 415 more rows
+#> # ℹ 1 more variable: subdomain <chr>
+```
+
+Let’s plot these stations using the package’s dataset `greece_borders`.
+
+``` r
+
+ggplot() + 
+  geom_polygon(data = greece_borders,
+               aes(long, lat, group = group),
+               fill = "grey",
+               color = NA) +
+  geom_point(data = kyy_stations,
+             aes(x = longitude, y = latitude),
+             color = "#E64B35FF") +
+  coord_fixed(ratio=1) +
+  theme_bw()
+#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
+```
+
+![](intro_hydroscoper_files/figure-html/kyy_stations_map-1.png)
+
+To get the time series’ data for the station `200200` we can use:
+
+``` r
+
+station_ts <- subset(timeseries, station_id == 200200)
+station_ts
+```
+
+We can download the station’s precipitation time series **56**:
+
+``` r
+
+ts_raw <- get_data(subdomain = "kyy", time_id = 56)
+ts_raw
+```
+
+Let’s create a plot:
+
+``` r
+
+ggplot(data = ts_raw, aes(x = date, y = value))+
+  geom_line()+
+  labs(title= "30 min precipitation", 
+       subtitle = "station 200200",
+       x="Date", y = "Rain height (mm)")+
+  theme_classic()
+```
