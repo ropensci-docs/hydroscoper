@@ -1,0 +1,13 @@
+{
+  "commit": {
+    "commit": "12fe583b5b599c2f76f1a1fa446723a866abe78f",
+    "author": "Konstantinos Vantas <kon.vantas@gmail.com>",
+    "time": "2026-11-08T19:07:25Z",
+    "files": 63,
+    "merge": false,
+    "message": "- Correct timestamp interpretation using source UTC-offset metadata\n- Validate arguments and downloaded payloads while preserving error details\n- Fix default subdomains and accept valid zero-valued lookup IDs\n- Improve coordinate parsing and document station coordinates as WGS84\n- Correct water-division translations and preserve scientific unit symbols\n- Repair bundled variable labels and document upstream date-quality issues\n- Replace ineffective HTTP mocks with deterministic offline tests\n- Modernize data-generation scripts and use complete station keys\n- Update broken links, dependency metadata, CI, and release documentation\n- Regenerate README and package documentation\n\nValidation: all tests and devtools::check() pass; all R Markdown\ndocuments compile successfully.\n"
+  },
+  "repo": "https://github.com/ropensci/hydroscoper",
+  "pkg": "hydroscoper",
+  "time": "2026-11-08T20:37:36Z"
+}
